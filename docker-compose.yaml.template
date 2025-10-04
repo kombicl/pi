@@ -1,0 +1,49 @@
+version: "3"
+
+services:
+  cloudflared:
+    container_name: cloudflared
+    image: visibilityspots/cloudflared
+    restart: unless-stopped
+    networks:
+      internal_net:
+        ipv4_address: 10.0.0.2
+
+  pi-hole:
+    container_name: pi-hole
+    image: pihole/pihole:latest
+    restart: unless-stopped
+    hostname: pihole
+    ports:
+      - "192.168.1.174:53:53/tcp"
+      - "192.168.1.174:53:53/udp"
+      - "192.168.1.174:80:80/tcp"
+    volumes:
+      - "./config/pihole:/etc/pihole"
+      - "./config/dnsmasq:/etc/dnsmasq.d"
+    environment:
+      - FTLCONF_dns_upstreams=10.0.0.2#5054;8.8.8.8#53
+      - FTLCONF_dns_listeningMode=all
+      - IPv6=false
+      - TZ=America/Santiago
+      - WEBPASSWORD=nuevapassword123
+      - ServerIP=192.168.1.174
+    extra_hosts:
+      - "printer.mynetwork:192.168.5.33"
+      - "router.mynetwork:192.168.5.1"
+      - "cloudflared:10.0.0.2"
+    networks:
+      internal_net:
+        ipv4_address: 10.0.0.3
+    dns:
+      - 1.1.1.1
+      - 8.8.8.8
+    cap_add:
+      - NET_ADMIN
+
+networks:
+  internal_net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 10.0.0.0/29

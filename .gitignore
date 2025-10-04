@@ -1,0 +1,26 @@
+# Docker
+docker-compose.yaml
+config/
+
+# Logs
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Temporary files
+*.tmp
+*.bak
+*.backup
+
+# Local testing
+test/
+local/
